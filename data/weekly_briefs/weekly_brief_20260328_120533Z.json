@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-03-28T12:05:33.302703+00:00",
+  "days": 7,
+  "total_filtered": 0,
+  "action_counts": {},
+  "daily": [
+    {
+      "day": "2026-03-22",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-23",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-24",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-25",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-26",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-27",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-28",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    }
+  ],
+  "busiest_day": {
+    "day": "2026-03-22",
+    "status_update": 0,
+    "pin_update": 0,
+    "other": 0,
+    "total": 0
+  },
+  "top_actors": [],
+  "top_cards": [],
+  "highlights": [
+    "直近期間の監査ログは0件でした。運用変更は落ち着いています。"
+  ],
+  "playbook_for_vibe_coders": [
+    "今週は運用変更が少ないため、新しい配信ルールやカード分類ルールを試す余白があります。",
+    "来週に向けて、重要トピックの定義と `published/draft` の判断基準を1ページで整理しておくと実装しやすくなります。"
+  ],
+  "filters": {
+    "action": null,
+    "card_id": null,
+    "actor": null,
+    "from_ts": null,
+    "to_ts": null
+  }
+}

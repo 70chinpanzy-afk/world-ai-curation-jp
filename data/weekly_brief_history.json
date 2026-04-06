@@ -1,0 +1,72 @@
+[
+  {
+    "saved_at": "2026-03-28T15:54:08.129295+00:00",
+    "generated_at": "2026-03-28T15:54:06.862795+00:00",
+    "days": 7,
+    "total_filtered": 4,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_155408Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_155408Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T15:01:45.531846+00:00",
+    "generated_at": "2026-03-28T15:01:44.355851+00:00",
+    "days": 7,
+    "total_filtered": 4,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_150145Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_150145Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T12:17:23.263087+00:00",
+    "generated_at": "2026-03-28T12:17:22.517357+00:00",
+    "days": 7,
+    "total_filtered": 4,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_121723Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_121723Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T12:10:17.989404+00:00",
+    "generated_at": "2026-03-28T12:10:17.381884+00:00",
+    "days": 7,
+    "total_filtered": 4,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_121017Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_121017Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T12:08:07.008701+00:00",
+    "generated_at": "2026-03-28T12:08:06.268916+00:00",
+    "days": 7,
+    "total_filtered": 0,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_120807Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_120807Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T12:05:33.322771+00:00",
+    "generated_at": "2026-03-28T12:05:33.302703+00:00",
+    "days": 7,
+    "total_filtered": 0,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_120533Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_120533Z.md"
+  },
+  {
+    "saved_at": "2026-03-28T01:38:58.490532+00:00",
+    "generated_at": "2026-03-28T01:38:58.490042+00:00",
+    "days": 7,
+    "total_filtered": 0,
+    "json_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.json",
+    "md_path": "/Users/naoya/world-ai-curation/data/weekly_brief_latest.md",
+    "archive_json_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_013858Z.json",
+    "archive_md_path": "/Users/naoya/world-ai-curation/data/weekly_briefs/weekly_brief_20260328_013858Z.md"
+  }
+]

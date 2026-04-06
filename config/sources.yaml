@@ -1,0 +1,79 @@
+version: 1
+
+policy:
+  main_feed_minimum_tier: B
+  social_sources_are_secondary: true
+  require_cross_source_confirmation_for_social_only_story: true
+  tier_c_max_items_per_source: 4
+
+sources:
+  - name: "OpenAI News"
+    kind: "rss"
+    tier: "A"
+    url: "https://openai.com/news/rss.xml"
+
+  - name: "Anthropic News"
+    kind: "website"
+    tier: "A"
+    url: "https://www.anthropic.com/news"
+
+  - name: "Google DeepMind Blog"
+    kind: "rss"
+    tier: "A"
+    url: "https://deepmind.google/blog/rss.xml"
+
+  - name: "Meta AI Blog"
+    kind: "website"
+    tier: "A"
+    url: "https://ai.meta.com/blog/"
+
+  - name: "Microsoft AI Blog"
+    kind: "rss"
+    tier: "A"
+    url: "https://blogs.microsoft.com/blog/tag/ai/feed/"
+
+  - name: "Hugging Face Blog"
+    kind: "rss"
+    tier: "A"
+    url: "https://huggingface.co/blog/feed.xml"
+
+  - name: "arXiv AI"
+    kind: "rss"
+    tier: "B"
+    url: "https://export.arxiv.org/rss/cs.AI"
+
+  - name: "AWS Machine Learning Blog"
+    kind: "rss"
+    tier: "B"
+    url: "https://aws.amazon.com/blogs/machine-learning/feed/"
+
+  - name: "BAIR Blog"
+    kind: "rss"
+    tier: "B"
+    url: "https://bair.berkeley.edu/blog/feed.xml"
+
+  - name: "MIT Technology Review AI"
+    kind: "rss"
+    tier: "B"
+    url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
+
+  - name: "NVIDIA AI Blog"
+    kind: "rss"
+    tier: "B"
+    url: "https://blogs.nvidia.com/feed/"
+
+  - name: "X Signals"
+    kind: "api"
+    tier: "C"
+    url: "https://api.x.com"
+    is_active: false
+    params:
+      provider: "x"
+      queries:
+        - "AI OR LLM (release OR launch OR benchmark) -is:retweet lang:en"
+        - "(agents OR coding assistant) (api OR sdk OR github) -is:retweet lang:en"
+
+  - name: "note Signals"
+    kind: "rss"
+    tier: "C"
+    url: "https://note.com/hashtag/AI/rss"

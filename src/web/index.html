@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI情報まとめ | 海外一次情報をやさしい日本語で解説</title>
+    <meta
+      name="description"
+      content="海外AIニュースの一次情報を中心に、非エンジニアでも分かる日本語で要点と実践手順をまとめるキュレーションサイト。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="__PUBLIC_BASE_URL__/" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AI情報まとめ" />
+    <meta property="og:title" content="AI情報まとめ | 海外一次情報をやさしい日本語で解説" />
+    <meta
+      property="og:description"
+      content="海外AIニュースの一次情報を中心に、非エンジニアでも実践しやすい形で毎日キャッチアップ。"
+    />
+    <meta property="og:url" content="__PUBLIC_BASE_URL__/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AI情報まとめ | 海外一次情報をやさしい日本語で解説" />
+    <meta
+      name="twitter:description"
+      content="非エンジニア向けの実装ステップ付きで、世界のAI情報を毎日チェックできます。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "AI情報まとめ",
+        "url": "__PUBLIC_BASE_URL__/",
+        "inLanguage": "ja-JP",
+        "description": "海外AI情報を、非エンジニアでも分かる日本語で実践向けにまとめるサイト"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "このサイトはどんな人向けですか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "非エンジニアでもAI情報を実装アイデアに変えたい人向けです。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "情報の信頼性はどう判断していますか？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "海外の一次情報や信頼ソースを優先し、Xやnoteは補助シグナルとして扱っています。"
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <main class="container">
+      <header class="hero">
+        <p class="kicker">Global AI Intelligence in Japanese</p>
+        <h1>AI情報まとめ</h1>
+        <p class="lead">
+          海外AI情報を中心に、一次情報に近い内容を「やさしい日本語」と「今日やること」に落とし込んで届けます。
+        </p>
+        <p class="lead">
+          <a href="/admin">運営者向け: 管理画面を開く</a>
+        </p>
+      </header>
+
+      <section class="toolbar" aria-label="filters">
+        <label>
+          表示モード
+          <select id="audience">
+            <option value="vibe" selected>やさしく読む</option>
+            <option value="builder">作る目線で読む</option>
+            <option value="raw">生情報を読む</option>
+          </select>
+        </label>
+
+        <label>
+          セクション
+          <select id="section">
+            <option value="all" selected>すべて</option>
+            <option value="main">メイン</option>
+            <option value="signals">シグナル</option>
+          </select>
+        </label>
+
+        <label>
+          テーマ
+          <select id="topic">
+            <option value="" selected>すべて</option>
+            <option value="agents">エージェント</option>
+            <option value="developer-tools">開発ツール</option>
+            <option value="research">研究</option>
+            <option value="policy">ポリシー</option>
+            <option value="general">一般</option>
+          </select>
+        </label>
+
+        <label>
+          難易度
+          <select id="difficulty">
+            <option value="" selected>すべて</option>
+            <option value="初級">初級</option>
+            <option value="中級">中級</option>
+            <option value="上級寄り">上級寄り</option>
+            <option value="初級（検証前提）">初級（検証前提）</option>
+          </select>
+        </label>
+
+        <button id="refresh" class="btn" type="button">最新情報に更新</button>
+      </section>
+
+      <section class="toolbar preset-toolbar" aria-label="favorite filters">
+        <label>
+          保存済みフィルタ
+          <select id="presetSelect">
+            <option value="" selected>保存済みを選択</option>
+          </select>
+        </label>
+
+        <label>
+          保存名
+          <input id="presetName" type="text" placeholder="例: 海外一次情報・初級" maxlength="40" />
+        </label>
+
+        <button id="presetSave" class="btn" type="button">現在条件を保存</button>
+        <button id="presetApply" class="btn" type="button">適用</button>
+        <button id="presetDelete" class="btn" type="button">削除</button>
+        <button id="copyFilterUrl" class="btn" type="button">条件URLをコピー</button>
+      </section>
+
+      <section class="status-row">
+        <p id="statusText">Loading...</p>
+      </section>
+
+      <section class="guide-block">
+        <h2>非エンジニア向けの見方</h2>
+        <ol>
+          <li>まず `Vibe` で全体像をつかむ</li>
+          <li>`Difficulty` が「初級」のカードから試す</li>
+          <li>`Builder Playbook` の `First 15min` をそのまま実行する</li>
+        </ol>
+      </section>
+
+      <section class="affiliate-block" aria-label="affiliate">
+        <h2>おすすめツール</h2>
+        <p id="affiliateDisclosure" class="affiliate-disclosure">読み込み中...</p>
+        <div id="affiliateList" class="affiliate-list"></div>
+      </section>
+
+      <section id="cards" class="cards" aria-live="polite"></section>
+
+      <footer class="guide-block">
+        <p class="lead">
+          <a href="/privacy">プライバシーポリシー</a> |
+          <a href="/terms">利用規約</a> |
+          <a href="/affiliate-disclosure">アフィリエイト開示</a> |
+          <a href="/feed.xml">RSS</a>
+        </p>
+      </footer>
+    </main>
+
+    <template id="cardTemplate">
+      <article class="card">
+        <div class="card-top">
+          <span class="chip tier"></span>
+          <span class="chip section"></span>
+          <span class="chip topic"></span>
+          <span class="chip difficulty"></span>
+          <span class="score"></span>
+        </div>
+        <h2 class="headline"></h2>
+        <p class="source-meta"></p>
+        <p class="summary"></p>
+        <p class="enrichment-meta"></p>
+        <pre class="display-text"></pre>
+        <details class="builder-pack">
+          <summary>作ってみる手順（Builder Playbook）</summary>
+          <pre class="builder-pack-text"></pre>
+        </details>
+        <a class="source-link" target="_blank" rel="noopener noreferrer">元情報（ソース）を開く</a>
+      </article>
+    </template>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

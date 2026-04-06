@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World AI Curation Admin</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <main class="container">
+      <header class="hero">
+        <p class="kicker">Editorial Console</p>
+        <h1>Admin Workflow</h1>
+        <p class="lead">draft / published / archived と pin 操作をカード単位で管理します。</p>
+        <p class="lead"><a href="/">Back To Feed</a></p>
+      </header>
+
+      <section class="toolbar" aria-label="admin filters">
+        <label>
+          Audience
+          <select id="audience">
+            <option value="vibe" selected>Vibe</option>
+            <option value="builder">Builder</option>
+            <option value="raw">Raw</option>
+          </select>
+        </label>
+
+        <label>
+          Section
+          <select id="section">
+            <option value="all" selected>All</option>
+            <option value="main">Main</option>
+            <option value="signals">Signals</option>
+          </select>
+        </label>
+
+        <label>
+          Status
+          <select id="status">
+            <option value="all" selected>All</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+        </label>
+
+        <label>
+          Difficulty
+          <select id="difficulty">
+            <option value="" selected>All Levels</option>
+            <option value="初級">初級</option>
+            <option value="中級">中級</option>
+            <option value="上級寄り">上級寄り</option>
+            <option value="初級（検証前提）">初級（検証前提）</option>
+          </select>
+        </label>
+
+        <button id="reload" class="btn" type="button">Reload</button>
+      </section>
+
+      <section class="status-row">
+        <p id="statusText">Loading admin cards...</p>
+      </section>
+
+      <section id="cards" class="cards" aria-live="polite"></section>
+
+      <section class="audit-block">
+        <h2>Audit Logs</h2>
+        <div class="audit-toolbar">
+          <label>
+            Action
+            <select id="auditAction">
+              <option value="" selected>All</option>
+              <option value="status_update">Status Update</option>
+              <option value="pin_update">Pin Update</option>
+            </select>
+          </label>
+          <label>
+            Card ID
+            <input id="auditCardId" type="text" placeholder="card-123" />
+          </label>
+          <label>
+            Actor
+            <input id="auditActor" type="text" placeholder="admin" />
+          </label>
+          <label>
+            From
+            <input id="auditFromTs" type="datetime-local" />
+          </label>
+          <label>
+            To
+            <input id="auditToTs" type="datetime-local" />
+          </label>
+          <label>
+            Range Preset
+            <select id="auditRangePreset">
+              <option value="custom" selected>Custom</option>
+              <option value="last24h">Last 24 hours</option>
+              <option value="today">Today</option>
+              <option value="last7">Last 7 days</option>
+              <option value="thisMonth">This month</option>
+              <option value="lastMonth">Last month</option>
+            </select>
+          </label>
+          <label>
+            Limit
+            <select id="auditLimit">
+              <option value="20">20</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="300">300</option>
+            </select>
+          </label>
+          <button id="auditClearRange" class="btn" type="button">Clear Range</button>
+          <button id="auditReload" class="btn" type="button">Reload Logs</button>
+          <button id="auditDownload" class="btn" type="button">Download CSV</button>
+        </div>
+        <p id="auditStatus" class="status-row">Loading audit logs...</p>
+        <p id="auditActionSummary" class="status-row">集計中...</p>
+        <div class="audit-trend-toolbar">
+          <label>
+            Trend Scope
+            <select id="auditTrendScope">
+              <option value="page" selected>Current Page</option>
+              <option value="filtered">Filtered All</option>
+            </select>
+          </label>
+          <label>
+            Trend Days
+            <select id="auditTrendDays">
+              <option value="7" selected>7</option>
+              <option value="14">14</option>
+              <option value="30">30</option>
+            </select>
+          </label>
+          <label>
+            Top N
+            <select id="auditTopLimit">
+              <option value="3">3</option>
+              <option value="5" selected>5</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+          <button id="auditTrendDownload" class="btn" type="button">Trend CSV</button>
+          <button id="auditWeeklyReport" class="btn" type="button">Weekly Brief</button>
+          <button id="auditWeeklyMd" class="btn" type="button">Weekly MD</button>
+          <button id="auditWeeklySave" class="btn" type="button">Save Brief</button>
+          <button id="auditWeeklyPublish" class="btn" type="button">Publish Brief</button>
+          <button id="auditWeeklyHistory" class="btn" type="button">History</button>
+          <button id="auditCopyLink" class="btn" type="button">Copy Filter URL</button>
+        </div>
+        <div id="auditTrend" class="audit-trend">集計中...</div>
+        <pre id="auditWeeklyBrief" class="audit-weekly-brief">週次ブリーフ読み込み待ち...</pre>
+        <div class="audit-history-toolbar">
+          <label>
+            History Search
+            <input id="auditHistorySearch" type="text" placeholder="keyword or path" />
+          </label>
+          <label>
+            History Limit
+            <select id="auditHistoryLimit">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+          <label>
+            History Sort
+            <select id="auditHistorySort">
+              <option value="desc" selected>Newest</option>
+              <option value="asc">Oldest</option>
+            </select>
+          </label>
+          <label>
+            Keep Latest
+            <select id="auditHistoryKeepLatest">
+              <option value="0" selected>0</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+          <button id="auditWeeklyHistoryReload" class="btn" type="button">Reload History</button>
+          <button id="auditWeeklyHistoryCsv" class="btn" type="button">History CSV</button>
+          <button id="auditWeeklyHistoryClear" class="btn" type="button">Clear History</button>
+          <button id="auditWeeklyHistoryCleanup" class="btn" type="button">Trim History</button>
+        </div>
+        <pre id="auditWeeklyHistoryText" class="audit-weekly-brief">履歴読み込み待ち...</pre>
+        <div class="audit-pager">
+          <button id="auditPrev" class="btn" type="button">Prev</button>
+          <p id="auditPageInfo" class="status-row">Page 1</p>
+          <button id="auditNext" class="btn" type="button">Next</button>
+        </div>
+        <div id="auditLogs" class="audit-logs"></div>
+      </section>
+    </main>
+
+    <template id="adminCardTemplate">
+      <article class="card">
+        <div class="card-top">
+          <span class="chip tier"></span>
+          <span class="chip section"></span>
+          <span class="chip difficulty"></span>
+          <span class="chip status"></span>
+          <span class="score"></span>
+        </div>
+
+        <h2 class="headline"></h2>
+        <p class="source-meta"></p>
+        <p class="summary"></p>
+
+        <div class="admin-controls">
+          <label>
+            Status
+            <select class="status-select">
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+              <option value="archived">Archived</option>
+            </select>
+          </label>
+
+          <label>
+            Pinned
+            <input class="pin-check" type="checkbox" />
+          </label>
+
+          <label>
+            Pin Rank
+            <input class="pin-rank" type="number" min="0" step="1" value="1000" />
+          </label>
+
+          <button class="save-btn" type="button">Save</button>
+        </div>
+
+        <pre class="display-text"></pre>
+        <a class="source-link" target="_blank" rel="noopener noreferrer">Source</a>
+      </article>
+    </template>
+
+    <script src="/static/admin.js" defer></script>
+  </body>
+</html>

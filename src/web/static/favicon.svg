@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AI情報まとめ">
+  <rect width="64" height="64" rx="14" fill="#0f172a" />
+  <circle cx="32" cy="22" r="10" fill="#22d3ee" />
+  <rect x="16" y="36" width="32" height="12" rx="6" fill="#facc15" />
+  <text x="32" y="26" text-anchor="middle" font-size="10" font-family="Arial, sans-serif" fill="#0f172a">AI</text>
+</svg>

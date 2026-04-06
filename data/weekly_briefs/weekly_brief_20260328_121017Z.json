@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-03-28T12:10:17.381884+00:00",
+  "days": 7,
+  "total_filtered": 4,
+  "action_counts": {
+    "status_update": 2,
+    "pin_update": 2
+  },
+  "daily": [
+    {
+      "day": "2026-03-22",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-23",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-24",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-25",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-26",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    },
+    {
+      "day": "2026-03-27",
+      "status_update": 2,
+      "pin_update": 2,
+      "other": 0,
+      "total": 4
+    },
+    {
+      "day": "2026-03-28",
+      "status_update": 0,
+      "pin_update": 0,
+      "other": 0,
+      "total": 0
+    }
+  ],
+  "busiest_day": {
+    "day": "2026-03-27",
+    "status_update": 2,
+    "pin_update": 2,
+    "other": 0,
+    "total": 4
+  },
+  "top_actors": [
+    {
+      "actor": "admin",
+      "count": 4
+    }
+  ],
+  "top_cards": [
+    {
+      "card_id": "8a0a4bef9888772f",
+      "count": 4
+    }
+  ],
+  "highlights": [
+    "直近期間の変更は合計4件（Status: 2 / Pin: 2 / Other: 0）です。",
+    "最も変更が集中した日は 2026-03-27（4件）でした。",
+    "変更の中心は `admin`（4件）です。",
+    "最も触られたカードは `8a0a4bef9888772f`（4件）です。"
+  ],
+  "playbook_for_vibe_coders": [
+    "Status変更が多い週です。まず `draft -> published` の基準を短く固定し、判断のブレを減らすと運用が安定します。",
+    "`8a0a4bef9888772f` のような更新頻度が高いカードは、テンプレ文面を作っておくと非エンジニアでも高速に編集できます。",
+    "次の改善として、変更理由を `details` に1行で残す運用にすると、後でAIに要約させやすくなります。"
+  ],
+  "filters": {
+    "action": null,
+    "card_id": null,
+    "actor": null,
+    "from_ts": null,
+    "to_ts": null
+  }
+}
