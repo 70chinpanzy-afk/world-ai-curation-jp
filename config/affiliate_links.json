@@ -1,19 +1,4 @@
 {
   "disclosure": "本ページにはアフィリエイトリンクが含まれる場合があります。掲載順は広告報酬の大小で決めていません。",
-  "links": [
-    {
-      "title": "AI開発の入門書（例）",
-      "url": "https://example.com/your-affiliate-link-1",
-      "description": "非エンジニア向けに、AIアプリ開発の全体像を学べる本。",
-      "badge": "初心者向け",
-      "is_active": true
-    },
-    {
-      "title": "ノーコード自動化ツール（例）",
-      "url": "https://example.com/your-affiliate-link-2",
-      "description": "Zapier/Makeのような自動化ツールの比較に使えます。",
-      "badge": "業務効率化",
-      "is_active": true
-    }
-  ]
+  "links": []
 }

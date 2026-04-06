@@ -245,6 +245,7 @@ PUBLIC_BASE_URL=https://your-domain.example
 
 アフィリエイト表示は `config/affiliate_links.json` で編集できます。
 `is_active: true` の項目だけ表示されます。
+Vercel運用では `AFFILIATE_LINKS_JSON`（環境変数）を設定すると、ファイルより優先して反映されます。
 
 ```json
 {
@@ -260,6 +261,18 @@ PUBLIC_BASE_URL=https://your-domain.example
   ]
 }
 ```
+
+VercelにCLIで反映する例:
+```bash
+cd /Users/naoya/world-ai-curation-standalone
+python3 - <<'PY'
+import json, pathlib
+path = pathlib.Path("config/affiliate_links.json")
+print(json.dumps(json.loads(path.read_text(encoding="utf-8")), ensure_ascii=False))
+PY
+```
+上の1行JSON出力をコピーして、Vercelの `Settings -> Environment Variables` で  
+`AFFILIATE_LINKS_JSON` に貼り付けてください（Environmentは `Production`）。
 
 公開前チェック:
 ```bash
@@ -344,6 +357,7 @@ cd /Users/naoya/world-ai-curation
 - `ADMIN_PASSWORD` (default `admin`)
 - `PUBLIC_BASE_URL` (公開URL。SEOのcanonical/OG/sitemap生成に使用)
 - `AFFILIATE_LINKS_PATH` (アフィリエイトリンクJSONのパス)
+- `AFFILIATE_LINKS_JSON` (optional, JSON string。Vercel運用で推奨)
 - `CLOUDFLARED_TUNNEL_TOKEN` (Cloudflare tunnel token)
 - `CLOUDFLARED_BIN` (optional, cloudflared binary path)
 - `X_BEARER_TOKEN` (optional, for X API ingestion)

@@ -141,20 +141,7 @@ def _affiliate_config_path() -> Path:
     return Path(os.getenv("AFFILIATE_LINKS_PATH", str(DEFAULT_AFFILIATE_CONFIG_PATH)))
 
 
-def _load_affiliate_payload() -> Dict[str, Any]:
-    default_payload = {
-        "disclosure": "本ページにはアフィリエイトリンクが含まれる場合があります。掲載順は広告報酬の大小で決めていません。",
-        "links": [],
-    }
-    path = _affiliate_config_path()
-    if not path.exists():
-        return default_payload
-
-    try:
-        raw = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return default_payload
-
+def _sanitize_affiliate_payload(raw: Any, default_payload: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(raw, dict):
         return default_payload
 
@@ -182,6 +169,38 @@ def _load_affiliate_payload() -> Dict[str, Any]:
                 }
             )
     return {"disclosure": disclosure, "links": links[:20]}
+
+
+def _load_affiliate_payload_from_env(default_payload: Dict[str, Any]) -> Dict[str, Any] | None:
+    raw_env = os.getenv("AFFILIATE_LINKS_JSON", "").strip()
+    if not raw_env:
+        return None
+    try:
+        payload = json.loads(raw_env)
+    except Exception:
+        return None
+    return _sanitize_affiliate_payload(payload, default_payload)
+
+
+def _load_affiliate_payload() -> Dict[str, Any]:
+    default_payload = {
+        "disclosure": "本ページにはアフィリエイトリンクが含まれる場合があります。掲載順は広告報酬の大小で決めていません。",
+        "links": [],
+    }
+    env_payload = _load_affiliate_payload_from_env(default_payload)
+    if env_payload is not None:
+        return env_payload
+
+    path = _affiliate_config_path()
+    if not path.exists():
+        return default_payload
+
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default_payload
+
+    return _sanitize_affiliate_payload(raw, default_payload)
 
 
 def _card_difficulty_level(card: Dict[str, Any]) -> str:

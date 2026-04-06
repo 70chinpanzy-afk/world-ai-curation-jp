@@ -1,5 +1,6 @@
 import unittest
 import os
+import json
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -132,6 +133,29 @@ class AppTests(unittest.TestCase):
                     self.assertEqual(payload["total"], 1)
                     self.assertEqual(payload["disclosure"], "affiliate disclosure")
                     self.assertEqual(payload["links"][0]["title"], "A")
+
+    def test_affiliate_links_json_env_overrides_file(self):
+        env_payload = {
+            "disclosure": "env disclosure",
+            "links": [
+                {"title": "Env Link", "url": "https://example.com/env", "description": "env", "badge": "env", "is_active": True}
+            ],
+        }
+        with patch.dict(os.environ, {"AFFILIATE_LINKS_JSON": json.dumps(env_payload)}, clear=False):
+            from src.app import _load_affiliate_payload
+
+            loaded = _load_affiliate_payload()
+            self.assertEqual(loaded["disclosure"], "env disclosure")
+            self.assertEqual(len(loaded["links"]), 1)
+            self.assertEqual(loaded["links"][0]["title"], "Env Link")
+
+    def test_affiliate_links_json_env_invalid_falls_back(self):
+        with patch.dict(os.environ, {"AFFILIATE_LINKS_JSON": "{invalid"}, clear=False):
+            from src.app import _load_affiliate_payload
+
+            loaded = _load_affiliate_payload()
+            self.assertIn("disclosure", loaded)
+            self.assertIn("links", loaded)
 
     def test_robots_and_sitemap_use_public_base_url(self):
         with patch("src.app.refresh_cards", return_value=SAMPLE_SNAPSHOT):
