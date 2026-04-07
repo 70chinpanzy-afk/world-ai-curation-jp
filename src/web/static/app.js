@@ -20,7 +20,7 @@ const FILTER_PRESETS_KEY = "world_ai_curation_feed_filter_presets_v1";
 const LAST_FILTER_KEY = "world_ai_curation_feed_last_filter_v1";
 
 function formatDate(iso) {
-  if (!iso) return "n/a";
+  if (!iso) return "不明";
   const date = new Date(iso);
   return date.toLocaleString();
 }
@@ -119,8 +119,8 @@ function writePresets(presets) {
 }
 
 function presetDisplayName(item) {
-  if (!item || typeof item !== "object") return "Untitled";
-  return String(item.name || "Untitled");
+  if (!item || typeof item !== "object") return "名称未設定";
+  return String(item.name || "名称未設定");
 }
 
 function refreshPresetOptions(selectedId = "") {
@@ -239,7 +239,7 @@ function renderAffiliateLinks(payload) {
 async function loadAffiliateLinks() {
   try {
     const response = await fetch("/api/affiliate-links");
-    if (!response.ok) throw new Error(`affiliate failed: ${response.status}`);
+    if (!response.ok) throw new Error(`おすすめ情報の取得に失敗しました: ${response.status}`);
     const payload = await response.json();
     renderAffiliateLinks(payload);
   } catch (error) {
@@ -441,7 +441,7 @@ function renderCards(cards) {
     sectionEl.classList.add(card.section);
 
     fragment.querySelector(".topic").textContent = topicLabel(card.topic);
-    const difficultyLevel = card.builder_pack?.difficulty?.level || "n/a";
+    const difficultyLevel = card.builder_pack?.difficulty?.level || "不明";
     const difficultyEl = fragment.querySelector(".difficulty");
     difficultyEl.textContent = difficultyLevel;
     difficultyEl.classList.add(difficultyClass(difficultyLevel));
@@ -495,7 +495,7 @@ async function loadCards() {
 
   const response = await fetch(`/api/cards?${params.toString()}`);
   if (!response.ok) {
-    throw new Error(`failed to load cards: ${response.status}`);
+    throw new Error(`記事の読み込みに失敗しました: ${response.status}`);
   }
 
   const data = await response.json();
@@ -510,7 +510,7 @@ async function refreshNow() {
   try {
     const response = await fetch("/api/refresh", { method: "POST" });
     if (!response.ok) {
-      throw new Error(`refresh failed: ${response.status}`);
+      throw new Error(`更新に失敗しました: ${response.status}`);
     }
     await loadCards();
   } catch (error) {
@@ -522,8 +522,8 @@ async function refreshNow() {
 }
 
 function buildAutoPresetName(filters) {
-  const topicLabel = filters.topic || "all-topic";
-  const difficultyLabel = filters.difficulty || "all-level";
+  const topicLabel = filters.topic || "すべてのテーマ";
+  const difficultyLabel = filters.difficulty || "すべての難易度";
   return `${topicLabel} | ${difficultyLabel}`;
 }
 
