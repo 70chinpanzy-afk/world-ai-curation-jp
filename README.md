@@ -274,6 +274,15 @@ PY
 上の1行JSON出力をコピーして、Vercelの `Settings -> Environment Variables` で  
 `AFFILIATE_LINKS_JSON` に貼り付けてください（Environmentは `Production`）。
 
+Amazonアフィリエイトを3件まとめて設定する（推奨）:
+```bash
+cd /Users/naoya/world-ai-curation-standalone
+./scripts/setup_amazon_affiliate_links.sh YOUR_AMAZON_TAG-22 production
+vercel deploy --prod --yes
+```
+
+`YOUR_AMAZON_TAG-22` は AmazonアソシエイトのトラッキングIDに置き換えてください。
+
 公開前チェック:
 ```bash
 cd /Users/naoya/world-ai-curation
