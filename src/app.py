@@ -12,6 +12,7 @@ from email.utils import format_datetime
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
+from urllib.parse import urlparse
 from xml.sax.saxutils import escape as xml_escape
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
@@ -29,6 +30,12 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "src" / "web"
 STATIC_DIR = WEB_DIR / "static"
 DEFAULT_AFFILIATE_CONFIG_PATH = ROOT_DIR / "config" / "affiliate_links.json"
+ALLOWED_AFFILIATE_IMAGE_HOSTS = {
+    "m.media-amazon.com",
+    "images-na.ssl-images-amazon.com",
+    "images-fe.ssl-images-amazon.com",
+    "ws-fe.amazon-adsystem.com",
+}
 
 
 class RuntimeState:
@@ -141,6 +148,21 @@ def _affiliate_config_path() -> Path:
     return Path(os.getenv("AFFILIATE_LINKS_PATH", str(DEFAULT_AFFILIATE_CONFIG_PATH)))
 
 
+def _is_allowed_affiliate_image_url(url: str) -> bool:
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return False
+    if parsed.scheme.lower() != "https":
+        return False
+    host = (parsed.hostname or "").lower()
+    if not host:
+        return False
+    if host in ALLOWED_AFFILIATE_IMAGE_HOSTS:
+        return True
+    return host.endswith(".media-amazon.com")
+
+
 def _sanitize_affiliate_payload(raw: Any, default_payload: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(raw, dict):
         return default_payload
@@ -166,8 +188,14 @@ def _sanitize_affiliate_payload(raw: Any, default_payload: Dict[str, Any]) -> Di
                     "url": url,
                     "description": str(row.get("description") or ""),
                     "badge": str(row.get("badge") or ""),
+                    "image_url": "",
+                    "image_alt": "",
                 }
             )
+            image_url = str(row.get("image_url") or "").strip()
+            if image_url and _is_allowed_affiliate_image_url(image_url):
+                links[-1]["image_url"] = image_url
+                links[-1]["image_alt"] = str(row.get("image_alt") or f'{links[-1]["title"]} の商品画像')
     return {"disclosure": disclosure, "links": links[:20]}
 
 

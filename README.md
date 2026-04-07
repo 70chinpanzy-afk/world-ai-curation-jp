@@ -256,11 +256,18 @@ Vercel運用では `AFFILIATE_LINKS_JSON`（環境変数）を設定すると、
       "url": "https://example.com/your-affiliate-link",
       "description": "読者向けの説明文",
       "badge": "初心者向け",
+      "image_url": "https://m.media-amazon.com/images/I/....jpg",
+      "image_alt": "商品画像の説明",
       "is_active": true
     }
   ]
 }
 ```
+
+画像付きカードについて（規約配慮）:
+- `image_url` は Amazon提供ドメインの `https` URL のみ表示されます。
+- 例: `m.media-amazon.com` / `images-na.ssl-images-amazon.com` / `ws-fe.amazon-adsystem.com`
+- 画像URLは Amazonアソシエイトの SiteStripe / 公式提供手段で取得したものを使ってください。
 
 VercelにCLIで反映する例:
 ```bash

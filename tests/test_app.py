@@ -138,7 +138,15 @@ class AppTests(unittest.TestCase):
         env_payload = {
             "disclosure": "env disclosure",
             "links": [
-                {"title": "Env Link", "url": "https://example.com/env", "description": "env", "badge": "env", "is_active": True}
+                {
+                    "title": "Env Link",
+                    "url": "https://example.com/env",
+                    "description": "env",
+                    "badge": "env",
+                    "is_active": True,
+                    "image_url": "https://m.media-amazon.com/images/I/example.jpg",
+                    "image_alt": "env image",
+                }
             ],
         }
         with patch.dict(os.environ, {"AFFILIATE_LINKS_JSON": json.dumps(env_payload)}, clear=False):
@@ -148,6 +156,8 @@ class AppTests(unittest.TestCase):
             self.assertEqual(loaded["disclosure"], "env disclosure")
             self.assertEqual(len(loaded["links"]), 1)
             self.assertEqual(loaded["links"][0]["title"], "Env Link")
+            self.assertEqual(loaded["links"][0]["image_url"], "https://m.media-amazon.com/images/I/example.jpg")
+            self.assertEqual(loaded["links"][0]["image_alt"], "env image")
 
     def test_affiliate_links_json_env_invalid_falls_back(self):
         with patch.dict(os.environ, {"AFFILIATE_LINKS_JSON": "{invalid"}, clear=False):
@@ -156,6 +166,27 @@ class AppTests(unittest.TestCase):
             loaded = _load_affiliate_payload()
             self.assertIn("disclosure", loaded)
             self.assertIn("links", loaded)
+
+    def test_affiliate_links_json_env_rejects_non_amazon_image(self):
+        env_payload = {
+            "disclosure": "env disclosure",
+            "links": [
+                {
+                    "title": "Env Link",
+                    "url": "https://example.com/env",
+                    "description": "env",
+                    "badge": "env",
+                    "is_active": True,
+                    "image_url": "https://example.com/not-allowed.jpg",
+                }
+            ],
+        }
+        with patch.dict(os.environ, {"AFFILIATE_LINKS_JSON": json.dumps(env_payload)}, clear=False):
+            from src.app import _load_affiliate_payload
+
+            loaded = _load_affiliate_payload()
+            self.assertEqual(len(loaded["links"]), 1)
+            self.assertEqual(loaded["links"][0]["image_url"], "")
 
     def test_robots_and_sitemap_use_public_base_url(self):
         with patch("src.app.refresh_cards", return_value=SAMPLE_SNAPSHOT):

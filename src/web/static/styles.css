@@ -163,6 +163,20 @@ input[type="datetime-local"],
   padding: 10px;
 }
 
+.affiliate-image-link {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.affiliate-image {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
 .affiliate-title {
   margin: 0;
   font-size: 0.96rem;
@@ -189,6 +203,12 @@ input[type="datetime-local"],
 .affiliate-link {
   color: #005f7d;
   font-weight: 700;
+}
+
+.affiliate-image-note {
+  margin: 6px 0 0;
+  color: #73736d;
+  font-size: 0.72rem;
 }
 
 .affiliate-empty {

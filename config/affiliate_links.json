@@ -1,4 +1,26 @@
 {
-  "disclosure": "本ページにはアフィリエイトリンクが含まれる場合があります。掲載順は広告報酬の大小で決めていません。",
-  "links": []
+  "disclosure": "当サイトはAmazonのアソシエイトとして、適格販売により収入を得ています。あわせて一部ページにはアフィリエイトリンクが含まれます。",
+  "links": [
+    {
+      "title": "USB-C ドッキングステーション",
+      "url": "https://www.amazon.co.jp/s?k=USB-C+%E3%83%89%E3%83%83%E3%82%AD%E3%83%B3%E3%82%B0%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3+4K&tag=peachpap-22",
+      "description": "ノートPCの拡張性を一気に上げる定番。外部ディスプレイや有線LAN運用に便利。",
+      "badge": "作業効率",
+      "is_active": true
+    },
+    {
+      "title": "静音メカニカルキーボード",
+      "url": "https://www.amazon.co.jp/s?k=%E9%9D%99%E9%9F%B3+%E3%83%A1%E3%82%AB%E3%83%8B%E3%82%AB%E3%83%AB%E3%82%AD%E3%83%BC%E3%83%9C%E3%83%BC%E3%83%89+%E6%97%A5%E6%9C%AC%E8%AA%9E%E9%85%8D%E5%88%97&tag=peachpap-22",
+      "description": "長時間タイピング向け。AI活用の入力作業を快適にしたい人におすすめ。",
+      "badge": "入力快適化",
+      "is_active": true
+    },
+    {
+      "title": "4K Webカメラ（マイク付き）",
+      "url": "https://www.amazon.co.jp/s?k=4K+Web%E3%82%AB%E3%83%A1%E3%83%A9+%E3%83%9E%E3%82%A4%E3%82%AF%E4%BB%98%E3%81%8D&tag=peachpap-22",
+      "description": "AIミーティングや録画解説の品質を上げたい人向け。",
+      "badge": "配信/会議",
+      "is_active": true
+    }
+  ]
 }

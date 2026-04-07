@@ -180,6 +180,24 @@ function renderAffiliateLinks(payload) {
     const card = document.createElement("article");
     card.className = "affiliate-card";
 
+    if (item.image_url) {
+      const imageLink = document.createElement("a");
+      imageLink.href = item.url || "#";
+      imageLink.target = "_blank";
+      imageLink.rel = "nofollow sponsored noopener noreferrer";
+      imageLink.className = "affiliate-image-link";
+
+      const image = document.createElement("img");
+      image.className = "affiliate-image";
+      image.src = item.image_url;
+      image.alt = item.image_alt || `${item.title || "おすすめリンク"} の商品画像`;
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.referrerPolicy = "no-referrer";
+      imageLink.appendChild(image);
+      card.appendChild(imageLink);
+    }
+
     const title = document.createElement("h3");
     title.className = "affiliate-title";
     title.textContent = item.title || "おすすめリンク";
@@ -206,6 +224,13 @@ function renderAffiliateLinks(payload) {
     link.className = "affiliate-link";
     link.textContent = "詳細を見る";
     card.appendChild(link);
+
+    if (item.image_url) {
+      const imageNote = document.createElement("p");
+      imageNote.className = "affiliate-image-note";
+      imageNote.textContent = "画像はAmazon提供素材を使用しています。";
+      card.appendChild(imageNote);
+    }
 
     affiliateList.appendChild(card);
   });

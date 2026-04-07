@@ -30,22 +30,22 @@ if "-" not in tag:
 
 items = [
     {
-        "title": "生成AIの入門書（まず1冊）",
-        "keyword": "生成AI 入門",
-        "description": "AIの全体像をつかみたい初心者向け。",
-        "badge": "初心者向け",
+        "title": "USB-C ドッキングステーション",
+        "keyword": "USB-C ドッキングステーション 4K",
+        "description": "ノートPCの拡張性を一気に上げる定番。外部ディスプレイや有線LAN運用に便利。",
+        "badge": "作業効率",
     },
     {
-        "title": "ChatGPTプロンプト実践本",
-        "keyword": "ChatGPT プロンプト 実践",
-        "description": "日々の業務にすぐ使えるプロンプト例を学びたい人向け。",
-        "badge": "実践重視",
+        "title": "静音メカニカルキーボード",
+        "keyword": "静音 メカニカルキーボード 日本語配列",
+        "description": "長時間タイピング向け。AI活用の入力作業を快適にしたい人におすすめ。",
+        "badge": "入力快適化",
     },
     {
-        "title": "Python入門（AI活用の土台）",
-        "keyword": "Python 入門",
-        "description": "将来的にAI自動化にも挑戦したい人向け。",
-        "badge": "スキルアップ",
+        "title": "4K Webカメラ（マイク付き）",
+        "keyword": "4K Webカメラ マイク付き",
+        "description": "AIミーティングや録画解説の品質を上げたい人向け。",
+        "badge": "配信/会議",
     },
 ]
 
@@ -59,6 +59,8 @@ for row in items:
             "url": url,
             "description": row["description"],
             "badge": row["badge"],
+            "image_url": "",
+            "image_alt": f'{row["title"]} の商品画像',
             "is_active": True,
         }
     )
