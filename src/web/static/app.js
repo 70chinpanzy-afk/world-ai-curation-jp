@@ -278,6 +278,48 @@ function compactList(value, limit = 3) {
     .slice(0, limit);
 }
 
+function hasJapanese(text) {
+  return /[\u3040-\u30ff\u3400-\u9fff]/.test(String(text || ""));
+}
+
+function personaActionHint(topic) {
+  if (topic === "agents") return "まずは1つの作業だけ自動化すると理解しやすいです。";
+  if (topic === "developer-tools") return "まずは使っているアプリ1つとの連携イメージを持てば十分です。";
+  if (topic === "research") return "結論だけ先に押さえて、詳しい式や実験条件は後でOKです。";
+  if (topic === "policy") return "ルール変更は『何が禁止・必須になったか』だけ先に見ればOKです。";
+  return "まずは『自分に関係あるか』だけ判断すれば十分です。";
+}
+
+function buildJapaneseFallbackSummary(card) {
+  const topic = topicLabel(card.topic);
+  const section = sectionHint(card.section);
+  const trust = tierHint(card.source?.tier || "");
+  const published = formatDate(card.source?.published_at);
+  const sourceName = String(card.source?.name || "海外ソース");
+  const actionHint = personaActionHint(card.topic);
+
+  return `海外の${topic}分野で新しい動きが出ています。情報元は${sourceName}で、分類は「${section}」、信頼度の目安は「${trust}」、公開時点は${published}です。${actionHint}`;
+}
+
+function localizedSummary(card) {
+  const summary = simplifyJapanese(card.summary || "");
+  if (summary && hasJapanese(summary)) return summary;
+  return buildJapaneseFallbackSummary(card);
+}
+
+function localizeBodyText(text, card) {
+  const value = String(text || "").trim();
+  if (!value) return buildJapaneseFallbackSummary(card);
+  if (hasJapanese(value)) return value;
+
+  const lines = [];
+  lines.push("このカードの読み方");
+  lines.push(`・${buildJapaneseFallbackSummary(card)}`);
+  lines.push("・詳細は「元情報（原文）を開く」から確認できます。");
+  lines.push("・難しい場合は、下の「作ってみる手順」を上から順に試してください。");
+  return lines.join("\n");
+}
+
 function renderReadableBody(text, headline, summary) {
   const lines = String(text || "")
     .split(/\r?\n/)
@@ -349,12 +391,13 @@ function sectionHint(section) {
 }
 
 function buildPersonaDigest(card) {
-  const summary = simplifyJapanese(card.summary || "");
+  const summary = localizedSummary(card);
   const lines = [];
   lines.push("何のニュース？");
   lines.push(summary || "要約準備中です。");
   lines.push("");
   lines.push(`情報の種類: ${sectionHint(card.section)}`);
+  lines.push(`読み方のコツ: ${personaActionHint(card.topic)}`);
   lines.push(`信頼度: ${tierHint(card.source?.tier || "")}`);
   lines.push(`いつの情報？: ${formatDate(card.source?.published_at)}`);
   return lines.join("\n");
@@ -449,7 +492,7 @@ function renderCards(cards) {
     fragment.querySelector(".headline").textContent = card.headline;
     fragment.querySelector(".source-meta").textContent = `${card.source.name} | ${formatDate(card.source.published_at)}`;
     const summaryPrefix = card.section === "signals" ? "補助シグナル: " : "";
-    fragment.querySelector(".summary").textContent = `${summaryPrefix}${card.summary}`;
+    fragment.querySelector(".summary").textContent = `${summaryPrefix}${localizedSummary(card)}`;
     const enrich = card.enrichment || {};
     const enrichLabel = enrich.enabled
       ? `要約モード: AI補助 (${enrich.provider}${enrich.model ? ` / ${enrich.model}` : ""})`
@@ -457,7 +500,7 @@ function renderCards(cards) {
     fragment.querySelector(".enrichment-meta").textContent = enrichLabel;
     const displayText = audience === "vibe"
       ? buildPersonaDigest(card)
-      : renderReadableBody(card.display_text, card.headline, card.summary);
+      : localizeBodyText(renderReadableBody(card.display_text, card.headline, card.summary), card);
     fragment.querySelector(".display-text").textContent = displayText;
 
     const builderPackEl = fragment.querySelector(".builder-pack");
