@@ -314,6 +314,52 @@ function renderReadableBody(text, headline, summary) {
   return output.join("\n");
 }
 
+function simplifyJapanese(text) {
+  let value = String(text || "").trim();
+  if (!value) return "";
+
+  const replacements = [
+    ["API", "連携機能"],
+    ["SDK", "開発キット"],
+    ["LLM", "AIモデル"],
+    ["benchmark", "比較テスト"],
+    ["ベンチマーク", "比較テスト"],
+    ["agent", "自動実行AI"],
+    ["エージェント", "自動実行AI"],
+    ["fine-tuning", "追加学習"],
+    ["ファインチューニング", "追加学習"],
+  ];
+  replacements.forEach(([from, to]) => {
+    value = value.replaceAll(from, to);
+  });
+  return value;
+}
+
+function tierHint(tier) {
+  if (tier === "A") return "高い（公式・一次情報）";
+  if (tier === "B") return "中くらい（信頼メディア）";
+  if (tier === "C") return "低め（未検証を含む）";
+  return "不明";
+}
+
+function sectionHint(section) {
+  if (section === "main") return "メイン情報（優先して読めばOK）";
+  if (section === "signals") return "補助シグナル（未検証を含む）";
+  return "一般";
+}
+
+function buildPersonaDigest(card) {
+  const summary = simplifyJapanese(card.summary || "");
+  const lines = [];
+  lines.push("何のニュース？");
+  lines.push(summary || "要約準備中です。");
+  lines.push("");
+  lines.push(`情報の種類: ${sectionHint(card.section)}`);
+  lines.push(`信頼度: ${tierHint(card.source?.tier || "")}`);
+  lines.push(`いつの情報？: ${formatDate(card.source?.published_at)}`);
+  return lines.join("\n");
+}
+
 function renderBuilderPack(builderPack) {
   if (!builderPack || typeof builderPack !== "object") {
     return "実践手順は準備中です。";
@@ -376,6 +422,7 @@ function renderBuilderPack(builderPack) {
 
 function renderCards(cards) {
   clearCards();
+  const audience = currentFilters().audience || "vibe";
 
   if (!cards.length) {
     const empty = document.createElement("p");
@@ -408,8 +455,18 @@ function renderCards(cards) {
       ? `要約モード: AI補助 (${enrich.provider}${enrich.model ? ` / ${enrich.model}` : ""})`
       : `要約モード: 標準 (${enrich.reason || "設定オフ"})`;
     fragment.querySelector(".enrichment-meta").textContent = enrichLabel;
-    fragment.querySelector(".display-text").textContent = renderReadableBody(card.display_text, card.headline, card.summary);
-    fragment.querySelector(".builder-pack-text").textContent = renderBuilderPack(card.builder_pack);
+    const displayText = audience === "vibe"
+      ? buildPersonaDigest(card)
+      : renderReadableBody(card.display_text, card.headline, card.summary);
+    fragment.querySelector(".display-text").textContent = displayText;
+
+    const builderPackEl = fragment.querySelector(".builder-pack");
+    if (audience === "builder") {
+      builderPackEl.hidden = false;
+      fragment.querySelector(".builder-pack-text").textContent = renderBuilderPack(card.builder_pack);
+    } else {
+      builderPackEl.hidden = true;
+    }
 
     const link = fragment.querySelector(".source-link");
     link.href = card.source.url;
