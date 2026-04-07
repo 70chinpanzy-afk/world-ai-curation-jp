@@ -270,85 +270,107 @@ function topicLabel(value) {
   return value || "一般";
 }
 
+function compactList(value, limit = 3) {
+  const rows = Array.isArray(value) ? value : [];
+  return rows
+    .map((line) => String(line || "").trim())
+    .filter((line) => line.length > 0)
+    .slice(0, limit);
+}
+
+function renderReadableBody(text, headline, summary) {
+  const lines = String(text || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const output = [];
+  const skipExact = new Set([
+    "[Vibe]",
+    "[Raw]",
+    "[Builder]",
+    "今日やること:",
+    "今日できること:",
+    "専門用語ミニ辞典:",
+  ]);
+
+  lines.forEach((line) => {
+    if (skipExact.has(line)) return;
+    if (/^\[[^\]]+\]$/.test(line)) return;
+    if (/^Source:\s*/i.test(line)) return;
+    if (/^Published:\s*/i.test(line)) return;
+    if (/^URL:\s*/i.test(line)) return;
+    if (/^Summary:\s*/i.test(line)) line = line.replace(/^Summary:\s*/i, "");
+    if (/^タイトル:\s*/.test(line)) return;
+    if (/^やさしい要約:\s*/.test(line)) line = line.replace(/^やさしい要約:\s*/, "");
+    if (/^なぜ大事？:\s*/.test(line)) line = line.replace(/^なぜ大事？:\s*/, "なぜ重要か: ");
+    if (/^注意:\s*/.test(line)) line = line.replace(/^注意:\s*/, "注意: ");
+    if (line === headline) return;
+    if (summary && line === summary) return;
+    output.push(line);
+  });
+
+  if (!output.length) return summary || "要点を整理中です。";
+  return output.join("\n");
+}
+
 function renderBuilderPack(builderPack) {
   if (!builderPack || typeof builderPack !== "object") {
-    return "Builder Playbook はこのカードでは利用できません。";
+    return "実践手順は準備中です。";
   }
 
-  const focus = builderPack.focus || "Focus not set";
-  const context = Array.isArray(builderPack.context) ? builderPack.context : [];
-  const prototype = Array.isArray(builderPack.prototype_30m) ? builderPack.prototype_30m : [];
-  const next24h = Array.isArray(builderPack.next_24h) ? builderPack.next_24h : [];
-  const promptSeed = builderPack.prompt_seed || "";
+  const focus = String(builderPack.focus || "").trim();
+  const prototype = compactList(builderPack.prototype_30m, 3);
+  const next24h = compactList(builderPack.next_24h, 3);
   const difficulty = builderPack.difficulty && typeof builderPack.difficulty === "object" ? builderPack.difficulty : null;
   const beginner = builderPack.for_non_engineers && typeof builderPack.for_non_engineers === "object"
     ? builderPack.for_non_engineers
     : null;
+  const noCode = compactList(beginner?.no_code_path, 3);
+  const checks = compactList(beginner?.decision_checklist, 3);
+  const guardrails = compactList(beginner?.fact_guardrails, 3);
 
   const lines = [];
-  lines.push(`[注目ポイント] ${focus}`);
-  if (context.length) {
-    lines.push("");
-    lines.push("[背景]");
-    context.forEach((line) => lines.push(`- ${line}`));
+  if (focus) {
+    lines.push(`ポイント: ${focus}`);
   }
   if (prototype.length) {
     lines.push("");
-    lines.push("[30分プロトタイプ]");
-    prototype.forEach((line) => lines.push(`- ${line}`));
+    lines.push("30分で試すこと:");
+    prototype.forEach((line, index) => lines.push(`${index + 1}. ${line}`));
   }
   if (next24h.length) {
     lines.push("");
-    lines.push("[次の24時間]");
-    next24h.forEach((line) => lines.push(`- ${line}`));
+    lines.push("次の一手:");
+    next24h.forEach((line, index) => lines.push(`${index + 1}. ${line}`));
   }
   if (difficulty) {
-    lines.push("");
-    lines.push("[難易度]");
-    if (difficulty.level) lines.push(`- レベル: ${difficulty.level}`);
-    if (difficulty.reason) lines.push(`- 理由: ${difficulty.reason}`);
-    if (difficulty.estimated_minutes) lines.push(`- 目安時間: ${difficulty.estimated_minutes}分`);
+    if (difficulty.level) lines.push(`難易度: ${difficulty.level}`);
+    if (difficulty.estimated_minutes) lines.push(`目安時間: ${difficulty.estimated_minutes}分`);
   }
   if (beginner) {
     if (beginner.first_15m) {
       lines.push("");
-      lines.push("[最初の15分]");
-      lines.push(beginner.first_15m);
+      lines.push(`最初の15分: ${beginner.first_15m}`);
     }
-
-    const noCode = Array.isArray(beginner.no_code_path) ? beginner.no_code_path : [];
     if (noCode.length) {
       lines.push("");
-      lines.push("[ノーコード手順]");
-      noCode.forEach((line) => lines.push(`- ${line}`));
+      lines.push("ノーコード手順:");
+      noCode.forEach((line, index) => lines.push(`${index + 1}. ${line}`));
     }
-
-    const checks = Array.isArray(beginner.decision_checklist) ? beginner.decision_checklist : [];
     if (checks.length) {
       lines.push("");
-      lines.push("[判断チェックリスト]");
-      checks.forEach((line) => lines.push(`- ${line}`));
+      lines.push("確認ポイント:");
+      checks.forEach((line, index) => lines.push(`${index + 1}. ${line}`));
     }
-
-    const guardrails = Array.isArray(beginner.fact_guardrails) ? beginner.fact_guardrails : [];
     if (guardrails.length) {
       lines.push("");
-      lines.push("[事実確認ガード]");
-      guardrails.forEach((line) => lines.push(`- ${line}`));
-    }
-
-    if (beginner.vibe_prompt_template) {
-      lines.push("");
-      lines.push("[コピペ用プロンプト]");
-      lines.push(beginner.vibe_prompt_template);
+      lines.push("事実確認:");
+      guardrails.forEach((line, index) => lines.push(`${index + 1}. ${line}`));
     }
   }
-  if (promptSeed) {
-    lines.push("");
-    lines.push("[追加プロンプト種]");
-    lines.push(promptSeed);
-  }
 
+  if (!lines.length) return "実践手順は準備中です。";
   return lines.join("\n");
 }
 
@@ -384,9 +406,9 @@ function renderCards(cards) {
     const enrich = card.enrichment || {};
     const enrichLabel = enrich.enabled
       ? `要約モード: AI補助 (${enrich.provider}${enrich.model ? ` / ${enrich.model}` : ""})`
-      : `要約モード: 標準テンプレート (${enrich.reason || "設定オフ"})`;
+      : `要約モード: 標準 (${enrich.reason || "設定オフ"})`;
     fragment.querySelector(".enrichment-meta").textContent = enrichLabel;
-    fragment.querySelector(".display-text").textContent = card.display_text;
+    fragment.querySelector(".display-text").textContent = renderReadableBody(card.display_text, card.headline, card.summary);
     fragment.querySelector(".builder-pack-text").textContent = renderBuilderPack(card.builder_pack);
 
     const link = fragment.querySelector(".source-link");
