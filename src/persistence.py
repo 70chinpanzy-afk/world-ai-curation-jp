@@ -832,7 +832,10 @@ class SnapshotPersistence:
                 self.backend = "file"
                 self.last_warning = f"postgres save failed; fallback to file storage: {exc}"
 
-        save_file_snapshot(merged, cache_path=self.cache_path)
+        try:
+            save_file_snapshot(merged, cache_path=self.cache_path)
+        except Exception as exc:
+            self.last_warning = f"file save failed; kept in-memory snapshot only: {exc}"
         return self._annotate(merged)
 
     def load_editorial_states(self) -> Dict[str, Dict[str, Any]]:
