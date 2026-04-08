@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 import hashlib
 import os
 import re
 import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
+from time import monotonic
 from typing import Any, Dict, List, Tuple
 
 from .connectors.rss_connector import fetch_rss_items
@@ -377,20 +378,42 @@ def _collect_items(sources: List[SourceDefinition], limit_per_source: int, polic
         return all_items, errors
 
     max_workers = max(1, min(6, len(active_sources)))
+    total_timeout_seconds = max(3, min(30, int(os.getenv("REFRESH_TOTAL_SOURCE_TIMEOUT_SECONDS", "6"))))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = []
+        futures = {}
         for source in active_sources:
             effective_limit = limit_per_source if _tier_rank(source.tier) >= _tier_rank("B") else tier_c_source_limit
-            futures.append(executor.submit(_collect_source_items, source, effective_limit))
+            future = executor.submit(_collect_source_items, source, effective_limit)
+            futures[future] = source
 
-        for future in as_completed(futures):
-            try:
-                items, errs = future.result()
-            except Exception as exc:
-                errors.append(f"Source collection failed: {exc}")
-                continue
-            all_items.extend(items)
-            errors.extend(errs)
+        started = monotonic()
+        completed = set()
+        try:
+            for future in as_completed(futures, timeout=total_timeout_seconds):
+                completed.add(future)
+                try:
+                    items, errs = future.result()
+                except Exception as exc:
+                    source = futures.get(future)
+                    if source:
+                        errors.append(f"Source collection failed: {source.name}: {exc}")
+                    else:
+                        errors.append(f"Source collection failed: {exc}")
+                    continue
+                all_items.extend(items)
+                errors.extend(errs)
+        except TimeoutError:
+            elapsed = monotonic() - started
+            pending_sources = [futures[f].name for f in futures if f not in completed]
+            for future in futures:
+                if future not in completed:
+                    future.cancel()
+            if pending_sources:
+                errors.append(
+                    f"Source collection timed out after {elapsed:.1f}s; skipped: {', '.join(pending_sources)}"
+                )
+            else:
+                errors.append(f"Source collection timed out after {elapsed:.1f}s")
 
     return all_items, errors
 
