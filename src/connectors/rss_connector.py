@@ -174,7 +174,20 @@ def _fetch_website_items(source: SourceDefinition, limit: int = 20) -> Tuple[Lis
 
 
 def fetch_rss_items(source: SourceDefinition, limit: int = 20) -> Tuple[List[SourceItem], str | None]:
-    parsed = feedparser.parse(source.url)
+    timeout_seconds = int(os.getenv("RSS_HTTP_TIMEOUT_SECONDS", "8"))
+    try:
+        req = urllib.request.Request(source.url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=timeout_seconds) as response:
+            payload = response.read()
+        parsed = feedparser.parse(payload)
+    except Exception as exc:
+        if source.kind == "website":
+            website_items, website_err = _fetch_website_items(source, limit=limit)
+            if website_items:
+                return website_items, None
+            if website_err:
+                return [], f"RSS parse failed for {source.name}: {exc}; {website_err}"
+        return [], f"RSS parse failed for {source.name}: {exc}"
 
     if getattr(parsed, "bozo", False):
         exc = getattr(parsed, "bozo_exception", None)

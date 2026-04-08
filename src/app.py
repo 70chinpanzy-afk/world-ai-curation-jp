@@ -606,6 +606,17 @@ def _parse_env_bool(name: str, default: bool = False) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _parse_env_int(name: str, default: int, *, minimum: int, maximum: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = int(raw.strip())
+    except Exception:
+        return default
+    return max(minimum, min(maximum, value))
+
+
 def _write_weekly_report_artifacts(payload: Dict[str, Any], *, archive: bool = True) -> Dict[str, str]:
     paths = _weekly_report_output_paths()
     json_path = paths["json_path"]
@@ -652,7 +663,8 @@ def _write_weekly_report_artifacts(payload: Dict[str, Any], *, archive: bool = T
 
 
 def _run_refresh() -> Dict[str, Any]:
-    snapshot = refresh_cards()
+    limit_per_source = _parse_env_int("REFRESH_LIMIT_PER_SOURCE", 8, minimum=1, maximum=30)
+    snapshot = refresh_cards(limit_per_source=limit_per_source)
     persisted = persistence.save_snapshot(snapshot)
     decorated = _set_state_with_editorial(persisted)
 

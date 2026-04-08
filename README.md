@@ -355,6 +355,7 @@ cd /Users/naoya/world-ai-curation
 ## Environment Variables
 - `AUTO_REFRESH_ON_START` (`1` or `0`, default `1`)
 - `REFRESH_INTERVAL_MINUTES` (default `60`)
+- `REFRESH_LIMIT_PER_SOURCE` (default `8`; `/api/refresh` 1回あたりのソースごとの取得上限)
 - `AUTO_WRITE_WEEKLY_BRIEF` (`1` or `0`, default `0`)
 - `AUTO_WRITE_WEEKLY_BRIEF_ARCHIVE` (`1` or `0`, default `1`)
 - `AUTO_POST_WEEKLY_BRIEF` (`1` or `0`, default `0`)
@@ -379,11 +380,12 @@ cd /Users/naoya/world-ai-curation
 - `X_BEARER_TOKEN` (optional, for X API ingestion)
 - `X_SEARCH_QUERIES` (optional, `||` separated query list)
 - `TIER_C_SOURCE_LIMIT` (optional, default `4`; X/noteなどTier Cの1ソースあたり取得上限)
-- `RSS_HTTP_TIMEOUT_SECONDS` (optional, default `20`)
+- `RSS_HTTP_TIMEOUT_SECONDS` (optional, default `8`)
 - `LLM_PROVIDER` (`none` or `openai`, default `none`)
 - `OPENAI_API_KEY` (required when `LLM_PROVIDER=openai`)
 - `OPENAI_MODEL` (optional, default `gpt-5-mini`)
 - `OPENAI_BASE_URL` (optional, default `https://api.openai.com`)
+- `OPENAI_ENRICH_MAX_CARDS` (optional, default `12`; OpenAI要約を適用する上位カード数)
 - `APP_PYTHON` (optional, launchdで使うPythonを明示したい場合)
 - `APP_STATUS_URL` (health check target, default `http://127.0.0.1:8000/api/status`)
 - `HEALTH_MAX_STALE_MINUTES` (health check stale threshold, default `180`)
@@ -410,8 +412,11 @@ X_BEARER_TOKEN=xxxxx \
 LLM_PROVIDER=openai \
 OPENAI_API_KEY=xxxxx \
 OPENAI_MODEL=gpt-5-mini \
+OPENAI_ENRICH_MAX_CARDS=12 \
 python3 -m uvicorn src.app:app --reload
 ```
+
+Vercel本番では `vercel.json` で Python Function の `maxDuration` を延長しています。
 
 ## API
 - `GET /api/status`

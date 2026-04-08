@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import os
 import re
@@ -282,6 +283,15 @@ def _resolve_tier_c_source_limit(policy: Dict[str, Any], default_limit: int) -> 
     return max(1, min(default_limit, parsed))
 
 
+def _resolve_enrich_max_cards(default_limit: int = 12) -> int:
+    raw_value = os.getenv("OPENAI_ENRICH_MAX_CARDS", str(default_limit)).strip()
+    try:
+        parsed = int(raw_value)
+    except Exception:
+        parsed = default_limit
+    return max(0, min(50, parsed))
+
+
 def _story_key(item: SourceItem) -> str:
     norm = _normalized_title(item.title)
     if not norm:
@@ -329,40 +339,58 @@ def _deduplicate_items(items: List[SourceItem]) -> List[SourceItem]:
     return list(deduped_by_story.values())
 
 
+def _collect_source_items(source: SourceDefinition, effective_limit: int) -> Tuple[List[SourceItem], List[str]]:
+    errors: List[str] = []
+
+    if source.kind in {"rss", "website"}:
+        items, err = fetch_rss_items(source, limit=effective_limit)
+        if err:
+            errors.append(err)
+        return items, errors
+
+    if source.kind == "api":
+        provider = str((source.params or {}).get("provider", "")).lower()
+        if provider == "x":
+            items, err = fetch_x_items(source, limit=effective_limit)
+            if err:
+                errors.append(err)
+            return items, errors
+
+        if source.tier == "C":
+            errors.append(f"Skipped social API source (optional): {source.name}")
+            return [], errors
+
+        errors.append(f"Unsupported API source: {source.name} provider={provider or 'unknown'}")
+        return [], errors
+
+    errors.append(f"Unsupported source kind for now: {source.name} ({source.kind})")
+    return [], errors
+
+
 def _collect_items(sources: List[SourceDefinition], limit_per_source: int, policy: Dict[str, Any]) -> Tuple[List[SourceItem], List[str]]:
     all_items: List[SourceItem] = []
     errors: List[str] = []
     tier_c_source_limit = _resolve_tier_c_source_limit(policy, default_limit=limit_per_source)
 
-    for source in sources:
-        if not source.is_active:
-            continue
-        effective_limit = limit_per_source if _tier_rank(source.tier) >= _tier_rank("B") else tier_c_source_limit
+    active_sources = [source for source in sources if source.is_active]
+    if not active_sources:
+        return all_items, errors
 
-        if source.kind in {"rss", "website"}:
-            items, err = fetch_rss_items(source, limit=effective_limit)
+    max_workers = max(1, min(6, len(active_sources)))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = []
+        for source in active_sources:
+            effective_limit = limit_per_source if _tier_rank(source.tier) >= _tier_rank("B") else tier_c_source_limit
+            futures.append(executor.submit(_collect_source_items, source, effective_limit))
+
+        for future in as_completed(futures):
+            try:
+                items, errs = future.result()
+            except Exception as exc:
+                errors.append(f"Source collection failed: {exc}")
+                continue
             all_items.extend(items)
-            if err:
-                errors.append(err)
-            continue
-
-        if source.kind == "api":
-            provider = str((source.params or {}).get("provider", "")).lower()
-            if provider == "x":
-                items, err = fetch_x_items(source, limit=effective_limit)
-                all_items.extend(items)
-                if err:
-                    errors.append(err)
-                continue
-
-            if source.tier == "C":
-                errors.append(f"Skipped social API source (optional): {source.name}")
-                continue
-
-            errors.append(f"Unsupported API source: {source.name} provider={provider or 'unknown'}")
-            continue
-
-        errors.append(f"Unsupported source kind for now: {source.name} ({source.kind})")
+            errors.extend(errs)
 
     return all_items, errors
 
@@ -426,11 +454,13 @@ def refresh_cards(config_path: Path | None = None, limit_per_source: int = 20) -
         normalized_title_to_tiers.setdefault(norm, set()).add(item.source_tier)
 
     ranked_cards = rank_items(deduped_items)
+    llm_provider = os.getenv("LLM_PROVIDER", "none").strip().lower()
+    enrich_max_cards = _resolve_enrich_max_cards(default_limit=12)
 
     serialized_cards: List[Dict[str, Any]] = []
     source_item_by_id = {_item_id(item): item for item in deduped_items}
 
-    for card in ranked_cards:
+    for index, card in enumerate(ranked_cards):
         card_item_key = _item_id(
             SourceItem(
                 source_name=card.source_name,
@@ -454,11 +484,22 @@ def refresh_cards(config_path: Path | None = None, limit_per_source: int = 20) -
                 summary="",
             )
 
-        variants, enrichment_meta = enrich_variants(
-            item=source_item,
-            base=card.variants,
-            score_breakdown=card.score_breakdown,
-        )
+        should_enrich = llm_provider == "openai" and index < enrich_max_cards
+        if should_enrich:
+            variants, enrichment_meta = enrich_variants(
+                item=source_item,
+                base=card.variants,
+                score_breakdown=card.score_breakdown,
+            )
+        else:
+            variants = card.variants
+            if llm_provider == "openai" and enrich_max_cards == 0:
+                reason = "OPENAI_ENRICH_MAX_CARDS=0"
+            elif llm_provider == "openai":
+                reason = f"cap reached ({enrich_max_cards})"
+            else:
+                reason = "LLM provider disabled"
+            enrichment_meta = {"enabled": False, "provider": llm_provider or "none", "reason": reason}
 
         norm = _normalized_title(card.headline)
         tiers_for_story = normalized_title_to_tiers.get(norm, {card.source_tier})
