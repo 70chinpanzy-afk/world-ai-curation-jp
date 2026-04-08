@@ -23,12 +23,12 @@ def _extract_output_text(payload: Dict[str, Any]) -> str:
 
 
 def _openai_enrich(item: SourceItem, base: CardVariants, score_breakdown: Dict[str, float]) -> Tuple[CardVariants, Dict[str, Any]]:
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = (os.getenv("OPENAI_API_KEY") or "").strip()
     if not api_key:
         return base, {"enabled": False, "provider": "openai", "reason": "OPENAI_API_KEY is not set"}
 
-    model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com")
+    model = (os.getenv("OPENAI_MODEL", "gpt-5-mini") or "gpt-5-mini").strip()
+    base_url = (os.getenv("OPENAI_BASE_URL", "https://api.openai.com") or "https://api.openai.com").strip()
     timeout_seconds = int(os.getenv("OPENAI_HTTP_TIMEOUT_SECONDS", "30"))
 
     prompt = (
@@ -81,7 +81,7 @@ def _openai_enrich(item: SourceItem, base: CardVariants, score_breakdown: Dict[s
 
 
 def enrich_variants(item: SourceItem, base: CardVariants, score_breakdown: Dict[str, float]) -> Tuple[CardVariants, Dict[str, Any]]:
-    provider = os.getenv("LLM_PROVIDER", "none").lower()
+    provider = (os.getenv("LLM_PROVIDER", "none") or "none").strip().lower()
     if provider == "openai":
         return _openai_enrich(item=item, base=base, score_breakdown=score_breakdown)
 
