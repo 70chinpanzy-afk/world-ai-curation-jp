@@ -67,20 +67,57 @@
       }
     </script>
   </head>
-  <body>
+  <body class="page-home">
     <div class="bg-grid" aria-hidden="true"></div>
 
     <main class="container">
       <header class="hero">
-        <p class="kicker">海外AI情報をやさしい日本語で</p>
-        <h1>AI情報まとめ</h1>
-        <p class="lead">
-          海外AI情報を中心に、まず「何が起きたか」をやさしい日本語で短く理解できる形で届けます。
-        </p>
-        <p class="lead">
+        <div class="hero-shell">
+          <div class="hero-copy">
+            <p class="kicker">海外AI情報をやさしい日本語で</p>
+            <h1>AI情報まとめ</h1>
+            <p class="hero-subline">今日15分で、未来に強くなる。</p>
+            <p class="lead">
+              海外の一次情報を、初心者にも伝わる日本語で要点化。読んで終わりではなく、今日の一歩までつなげるAI情報サイトです。
+            </p>
+            <div class="hero-tags" aria-label="value highlights">
+              <span>中高生にも読みやすい</span>
+              <span>海外一次情報メイン</span>
+              <span>行動につながる要点</span>
+            </div>
+          </div>
+          <aside class="hero-start" aria-label="quick start">
+            <h2>最初の3ステップ</h2>
+            <ol>
+              <li>「まず理解する」で3カード読む</li>
+              <li>気になった1件だけ元情報を確認</li>
+              <li>今日やることを1つメモして実行</li>
+            </ol>
+            <div class="hero-actions">
+              <a class="btn hero-btn" href="#cards">最新カードを見る</a>
+              <a class="hero-text-link" href="/feed.xml">RSSで受け取る</a>
+            </div>
+          </aside>
+        </div>
+        <p class="lead admin-link">
           <a href="/admin">運営者向け: 管理画面を開く</a>
         </p>
       </header>
+
+      <section class="future-grid" aria-label="future value">
+        <article class="future-card">
+          <h2>何ができるようになる？</h2>
+          <p>難しい言葉に止まらず、「この情報で自分は何を始めるか」を考える力がつきます。</p>
+        </article>
+        <article class="future-card">
+          <h2>どんな未来が見える？</h2>
+          <p>AIの流れを早めに知ることで、進路・仕事・副業の選択肢を増やす視点が育ちます。</p>
+        </article>
+        <article class="future-card">
+          <h2>お金にどうつながる？</h2>
+          <p>小さな実践を積むと、発信・作品・受託など、価値を収入に変える入口が見えてきます。</p>
+        </article>
+      </section>
 
       <section class="toolbar" aria-label="filters">
         <label>
@@ -148,6 +185,24 @@
 
       <section class="status-row">
         <p id="statusText">読み込み中...</p>
+      </section>
+
+      <section class="guide-block roadmap-block">
+        <h2>未来のロードマップ</h2>
+        <div class="roadmap-steps">
+          <article>
+            <p class="roadmap-term">1週間</p>
+            <p>AIニュースを怖がらずに読める</p>
+          </article>
+          <article>
+            <p class="roadmap-term">1か月</p>
+            <p>自分用のAI活用パターンが1つできる</p>
+          </article>
+          <article>
+            <p class="roadmap-term">3か月</p>
+            <p>作品・発信・副業の土台を作れる</p>
+          </article>
+        </div>
       </section>
 
       <section class="guide-block">
