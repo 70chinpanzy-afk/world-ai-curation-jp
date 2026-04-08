@@ -18,6 +18,7 @@ from .source_config import SourceDefinition, load_source_settings
 
 
 _WORD_RE = re.compile(r"[a-zA-Z0-9]+")
+_JA_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
 _TIER_PRIORITY = {"A": 3, "B": 2, "C": 1}
 
 
@@ -42,6 +43,42 @@ def _topic_from_text(title: str, summary: str) -> str:
     if any(x in text for x in ["benchmark", "paper", "arxiv", "research"]):
         return "research"
     return "general"
+
+
+def _has_japanese(text: str) -> bool:
+    return bool(_JA_RE.search(str(text or "")))
+
+
+def _extract_easy_summary_from_vibe(vibe: str) -> str:
+    for raw_line in str(vibe or "").splitlines():
+        line = raw_line.strip()
+        if line.startswith("やさしい要約:"):
+            return line.replace("やさしい要約:", "", 1).strip()
+    return ""
+
+
+def _topic_label_ja(topic: str) -> str:
+    if topic == "agents":
+        return "AIエージェント"
+    if topic == "developer-tools":
+        return "開発ツール"
+    if topic == "research":
+        return "研究"
+    if topic == "policy":
+        return "政策・ルール"
+    return "AI一般"
+
+
+def _section_hint_ja(section: str) -> str:
+    if section == "main":
+        return "優先して確認すべき主要アップデートです。"
+    return "補助シグナルとして、裏取り前提で扱う情報です。"
+
+
+def _fallback_summary_ja(*, headline: str, topic: str, section: str) -> str:
+    topic_ja = _topic_label_ja(topic)
+    section_hint = _section_hint_ja(section)
+    return f"{topic_ja}分野の更新です。{headline}に関する発表で、{section_hint}"
 
 
 def _builder_focus_for_topic(topic: str) -> str:
@@ -406,6 +443,18 @@ def refresh_cards(config_path: Path | None = None, limit_per_source: int = 20) -
             section = "main"
 
         topic = _topic_from_text(card.headline, source_item.summary if source_item else "")
+        summary_original = source_item.summary if source_item else ""
+        summary_from_vibe = _extract_easy_summary_from_vibe(variants.vibe)
+        if _has_japanese(summary_original):
+            summary_ja = summary_original
+        elif _has_japanese(summary_from_vibe):
+            summary_ja = summary_from_vibe
+        else:
+            summary_ja = _fallback_summary_ja(
+                headline=card.headline,
+                topic=topic,
+                section=section,
+            )
 
         serialized_cards.append(
             {
@@ -420,8 +469,11 @@ def refresh_cards(config_path: Path | None = None, limit_per_source: int = 20) -
                     "tier": card.source_tier,
                     "url": card.source_url,
                     "published_at": card.published_at.isoformat(),
+                    "language": source_item.language,
                 },
-                "summary": source_item.summary if source_item else "",
+                "summary": summary_original,
+                "summary_original": summary_original,
+                "summary_ja": summary_ja,
                 "variants": {
                     "raw": variants.raw,
                     "vibe": variants.vibe,

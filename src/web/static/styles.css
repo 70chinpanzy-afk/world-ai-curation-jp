@@ -511,6 +511,33 @@ input[type="datetime-local"],
   color: var(--muted);
 }
 
+.summary-ja {
+  font-weight: 600;
+  color: #2a4573;
+}
+
+.summary-original-block {
+  margin: 0 0 8px;
+  border: 1px dashed color-mix(in srgb, var(--line) 85%, #ffffff 15%);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 8px 10px;
+}
+
+.summary-original-block summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4f6685;
+}
+
+.summary-original-text {
+  margin: 8px 0 0;
+  color: #324b6e;
+  line-height: 1.52;
+  font-size: 0.87rem;
+}
+
 .enrichment-meta {
   margin: 0 0 8px;
   font-size: 0.82rem;
