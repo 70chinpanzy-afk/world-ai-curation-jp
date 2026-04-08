@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.error
 import urllib.request
 from typing import Any, Dict, Tuple
 
@@ -76,6 +77,18 @@ def _openai_enrich(item: SourceItem, base: CardVariants, score_breakdown: Dict[s
             builder=str(data.get("builder", base.builder)),
         )
         return enriched, {"enabled": True, "provider": "openai", "model": model, "reason": "ok"}
+    except urllib.error.HTTPError as exc:  # pragma: no cover
+        detail = ""
+        try:
+            raw = exc.read().decode("utf-8", "ignore")
+            parsed = json.loads(raw)
+            detail = str(parsed.get("error", {}).get("message") or "")[:240]
+        except Exception:
+            detail = ""
+        reason = f"fallback: HTTP {exc.code}"
+        if detail:
+            reason = f"{reason}: {detail}"
+        return base, {"enabled": False, "provider": "openai", "model": model, "reason": reason}
     except Exception as exc:  # pragma: no cover
         return base, {"enabled": False, "provider": "openai", "model": model, "reason": f"fallback: {exc}"}
 
