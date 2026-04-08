@@ -310,6 +310,30 @@ function extractJapaneseSummaryFromDisplay(text) {
   return "";
 }
 
+function actionHintFromOriginal(summary, topic) {
+  const text = String(summary || "").toLowerCase();
+  if (!text) return `${topicLabel(topic)}の更新`;
+  if (text.includes("raise") || text.includes("funding") || text.includes("investment")) {
+    return "資金調達・投資に関する発表";
+  }
+  if (text.includes("launch") || text.includes("release") || text.includes("introduce") || text.includes("available")) {
+    return "新機能・新サービスの公開";
+  }
+  if (text.includes("paper") || text.includes("arxiv") || text.includes("benchmark") || text.includes("research")) {
+    return "研究結果や比較評価の報告";
+  }
+  if (text.includes("policy") || text.includes("regulation") || text.includes("governance")) {
+    return "ルール・規制関連の更新";
+  }
+  if (text.includes("open source") || text.includes("github")) {
+    return "オープンソース公開・更新";
+  }
+  if (text.includes("integrat") || text.includes("partnership") || text.includes("collaborat")) {
+    return "他社連携・統合の発表";
+  }
+  return `${topicLabel(topic)}の主要アップデート`;
+}
+
 function japaneseSummary(card) {
   const summaryJa = simplifyJapanese(card.summary_ja || "");
   if (summaryJa) return summaryJa;
@@ -320,7 +344,12 @@ function japaneseSummary(card) {
   const fromDisplay = extractJapaneseSummaryFromDisplay(card.display_text || "");
   if (fromDisplay) return simplifyJapanese(fromDisplay);
 
-  return `${topicLabel(card.topic)}分野の更新です。${personaActionHint(card.topic)}`;
+  const actionHint = actionHintFromOriginal(card.summary || "", card.topic);
+  const headline = String(card.headline || "").trim();
+  if (headline) {
+    return `${actionHint}です。テーマは「${headline}」。${personaActionHint(card.topic)}`;
+  }
+  return `${actionHint}です。${personaActionHint(card.topic)}`;
 }
 
 function originalSummary(card) {

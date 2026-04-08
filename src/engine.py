@@ -75,10 +75,36 @@ def _section_hint_ja(section: str) -> str:
     return "補助シグナルとして、裏取り前提で扱う情報です。"
 
 
-def _fallback_summary_ja(*, headline: str, topic: str, section: str) -> str:
+def _action_hint_ja(summary: str, topic: str) -> str:
+    text = str(summary or "").lower()
+    if any(k in text for k in ["raise", "funding", "investment", "valuation"]):
+        return "資金調達・投資に関する発表"
+    if any(k in text for k in ["launch", "release", "introduce", "roll out", "rollout", "available"]):
+        return "新機能・新製品の公開"
+    if any(k in text for k in ["paper", "arxiv", "benchmark", "evaluation", "experiment", "research"]):
+        return "研究結果や比較評価の報告"
+    if any(k in text for k in ["partnership", "integrat", "collaborat", "ecosystem"]):
+        return "他社連携・統合の発表"
+    if any(k in text for k in ["policy", "regulation", "compliance", "governance", "law"]):
+        return "ルール・規制関連の更新"
+    if any(k in text for k in ["open source", "github", "repo", "apache", "mit license"]):
+        return "オープンソース公開・更新"
+    if topic == "agents":
+        return "AIエージェント活用の更新"
+    if topic == "developer-tools":
+        return "開発者向け機能の更新"
+    if topic == "research":
+        return "研究寄りの新情報"
+    if topic == "policy":
+        return "制度・安全性に関する更新"
+    return "AI分野の主要な更新"
+
+
+def _fallback_summary_ja(*, headline: str, summary: str, topic: str, section: str) -> str:
     topic_ja = _topic_label_ja(topic)
     section_hint = _section_hint_ja(section)
-    return f"{topic_ja}分野の更新です。{headline}に関する発表で、{section_hint}"
+    action_hint = _action_hint_ja(summary, topic)
+    return f"{topic_ja}分野のニュースです。『{headline}』は{action_hint}が中心の話題で、{section_hint}"
 
 
 def _builder_focus_for_topic(topic: str) -> str:
@@ -452,6 +478,7 @@ def refresh_cards(config_path: Path | None = None, limit_per_source: int = 20) -
         else:
             summary_ja = _fallback_summary_ja(
                 headline=card.headline,
+                summary=summary_original,
                 topic=topic,
                 section=section,
             )
